@@ -5,6 +5,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const line = require("./utils/line");
 const gemini = require("./utils/gemini");
+const axios = require('axios')
 
 // const NodeCache = require("node-cache");
 // const { user } = require("firebase-functions/v1/auth");
@@ -20,95 +21,95 @@ exports.webhook = onRequest(async (req, res) => {
 
     switch (event.type) {
       case "message":
-        // // ตรวจสอบเบอร์
-        // if (event.message.type === "text" && event.message.text.startsWith("ตรวจสอบเบอร์ ")) {
+        // ตรวจสอบเบอร์
+        if (event.message.type === "text" && event.message.text.startsWith("ตรวจสอบเบอร์ ")) {
 
-        //   const phoneNumber = event.message.text.replace("ตรวจสอบเบอร์ ", "");  // ดึงเบอร์โทรจากข้อความ
+          const phoneNumber = event.message.text.replace("ตรวจสอบเบอร์ ", "");  // ดึงเบอร์โทรจากข้อความ
 
-        //   console.log("Phone : " + phoneNumber)
+          console.log("Phone : " + phoneNumber)
 
-        //   let text = ""
-        //   try {
-        //     // ตรวจสอบเบอร์
-        //     axios.get("http://localhost:3001/phone/" + phoneNumber)
-        //       .then((res) => {
-        //         let phone_status = "";
-        //         console.log("API Response:", res.data);
+          let text = ""
+          try {
+            // ตรวจสอบเบอร์
+            axios.get("http://localhost:3001/phone/" + phoneNumber)
+              .then((res) => {
+                let phone_status = "";
+                console.log("API Response:", res.data);
 
-        //         // ตรวจสอบว่ามีในdatabase
-        //         if (!res.data || res.data.length === 0 || !res.data[0]) {
-        //           const text = `ไม่พบข้อมูลเบอร์ ${phoneNumber} ในระบบ`;
-        //           line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //           // return;
-        //         } else {
-        //           phone_status = res.data[0].status
-        //           // ถ้ามีเบอร์แต่ไม่ได้ยืนยัน
-        //           if (phone_status == "") {
-        //             const text = `เบอร์ ${phoneNumber} อาจจะไม่ปลอดภัย`
-        //             phone_status = "Not verify"
-        //             line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //             console.log(phone_status)
-        //             //เบอร์ยืนยันแล้ว
-        //           } else if (phone_status == "verify") {
-        //             const text = `เบอร์ ${phoneNumber} ไม่ปลอดภัย`
-        //             console.log(phone_status)
-        //             line.reply(event.replyToken, [{ type: "text", text: text }]);
+                // ตรวจสอบว่ามีในdatabase
+                if (!res.data || res.data.length === 0 || !res.data[0]) {
+                  const text = `ไม่พบข้อมูลเบอร์ ${phoneNumber} ในระบบ`;
+                  line.reply(event.replyToken, [{ type: "text", text: text }]);
+                  // return;
+                } else {
+                  phone_status = res.data[0].status
+                  // ถ้ามีเบอร์แต่ไม่ได้ยืนยัน
+                  if (phone_status == "") {
+                    const text = `เบอร์ ${phoneNumber} อาจจะไม่ปลอดภัย`
+                    phone_status = "Not verify"
+                    line.reply(event.replyToken, [{ type: "text", text: text }]);
+                    console.log(phone_status)
+                    //เบอร์ยืนยันแล้ว
+                  } else if (phone_status == "verify") {
+                    const text = `เบอร์ ${phoneNumber} ไม่ปลอดภัย`
+                    console.log(phone_status)
+                    line.reply(event.replyToken, [{ type: "text", text: text }]);
 
-        //           }
-        //         }
-        //       })
-        //     // await line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //   } catch (err) {
-        //     console.log(err)
-        //   }
+                  }
+                }
+              })
+            // await line.reply(event.replyToken, [{ type: "text", text: text }]);
+          } catch (err) {
+            console.log(err)
+          }
 
-        //   break;
-        // }
-        // // ตรวจสอบเว็บ
-        // if (event.message.type === "text" && event.message.text.startsWith("ตรวจสอบเว็บ ")) {
+          break;
+        }
+        // ตรวจสอบเว็บ
+        if (event.message.type === "text" && event.message.text.startsWith("ตรวจสอบเว็บ ")) {
 
-        //   const webUrl = event.message.text.replace("ตรวจสอบเว็บ ", "");  // ดึงเบอร์โทรจากข้อความ
+          const webUrl = event.message.text.replace("ตรวจสอบเว็บ ", "");  // ดึงเบอร์โทรจากข้อความ
 
-        //   console.log("url : " + webUrl)
+          console.log("url : " + webUrl)
 
-        //   let text = ""
-        //   try {
-        //     // ตรวจสอบเบอร์
-        //     axios.get("http://localhost:3001/web/" + webUrl)
-        //       .then((res) => {
-        //         let phone_status = "";
-        //         console.log("API Response:", res.data);
+          let text = ""
+          try {
+            // ตรวจสอบเบอร์
+            axios.get("http://localhost:3001/web/" + webUrl)
+              .then((res) => {
+                let phone_status = "";
+                console.log("API Response:", res.data);
 
-        //         // ตรวจสอบว่ามีในdatabase
-        //         if (!res.data || res.data.length === 0 || !res.data[0] || !res.data[0].status) {
-        //           const text = `ไม่พบข้อมูลเว็บ ${webUrl} ในระบบ`;
-        //           line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //           console.log(text)
-        //           return;
-        //         } else {
-        //           phone_status = res.data[0].status
-        //           // ถ้ามีเบอร์แต่ไม่ได้ยืนยัน
-        //           if (phone_status == "") {
-        //             const text = `เว็บ ${webUrl} อาจจะไม่ปลอดภัย`
-        //             phone_status = "Not verify"
-        //             line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //             console.log(phone_status)
-        //             //เบอร์ยืนยันแล้ว
-        //           } else if (phone_status == "verify") {
-        //             const text = `เว็บ ${webUrl} ไม่ปลอดภัย`
-        //             console.log(phone_status)
-        //             line.reply(event.replyToken, [{ type: "text", text: text }]);
+                // ตรวจสอบว่ามีในdatabase
+                if (!res.data || res.data.length === 0 || !res.data[0] || !res.data[0].status) {
+                  const text = `ไม่พบข้อมูลเว็บ ${webUrl} ในระบบ`;
+                  line.reply(event.replyToken, [{ type: "text", text: text }]);
+                  console.log(text)
+                  return;
+                } else {
+                  phone_status = res.data[0].status
+                  // ถ้ามีเบอร์แต่ไม่ได้ยืนยัน
+                  if (phone_status == "") {
+                    const text = `เว็บ ${webUrl} อาจจะไม่ปลอดภัย`
+                    phone_status = "Not verify"
+                    line.reply(event.replyToken, [{ type: "text", text: text }]);
+                    console.log(phone_status)
+                    //เบอร์ยืนยันแล้ว
+                  } else if (phone_status == "verify") {
+                    const text = `เว็บ ${webUrl} ไม่ปลอดภัย`
+                    console.log(phone_status)
+                    line.reply(event.replyToken, [{ type: "text", text: text }]);
 
-        //           }
-        //         }
-        //       })
-        //     // await line.reply(event.replyToken, [{ type: "text", text: text }]);
-        //   } catch (err) {
-        //     console.log(err)
-        //   }
+                  }
+                }
+              })
+            // await line.reply(event.replyToken, [{ type: "text", text: text }]);
+          } catch (err) {
+            console.log(err)
+          }
 
-        //   break;
-        // }
+          break;
+        }
 
         //rich menu
         if (event.message.text == "วิธีใช้ตรวจสอบเบอร์และเว็บไซต์") {
